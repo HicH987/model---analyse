@@ -1,3 +1,4 @@
+import math
 import os
 import cv2
 import mediapipe as mp
@@ -227,3 +228,61 @@ def main_execution_count(count_file_path):
         f.write(str(count))
         
     return count
+
+
+
+
+def get_dist(img, landmark_list, point1, point2, draw=True):
+    height, width, _ = img.shape
+
+    x1, y1 = landmark_list[point1][1:]
+    x2, y2 = landmark_list[point2][1:]
+
+    dist = math.sqrt(((x2 - x1) / width) ** 2 + ((y2 - y1) / height) ** 2)
+
+    if draw:
+        # Drawing lines between the three points
+        cv2.line(img, (x1, y1), (x2, y2), (255, 5, 255), 3)
+
+        # Drawing circles at intersection points of lines
+        cv2.circle(img, (x1, y1), 5, (75, 0, 130), cv2.FILLED)
+        cv2.circle(img, (x1, y1), 15, (75, 0, 130), 2)
+        cv2.circle(img, (x2, y2), 5, (75, 0, 130), cv2.FILLED)
+        cv2.circle(img, (x2, y2), 15, (75, 0, 130), 2)
+
+        # Show angles between lines
+        i = cv2.putText(
+            img,
+            str(round(dist, 2)),
+            (x2 - 50, y2 + 50),
+            cv2.FONT_HERSHEY_PLAIN,
+            2,
+            (0, 0, 255),
+            2,
+        )
+    return dist, i
+
+
+
+def get_coordinates(img, landmark_list, point, draw=True):
+    height, width, _ = img.shape
+
+    x, y = landmark_list[point][1:]
+
+    if draw:
+        # Drawing circles at intersection points of lines
+        cv2.circle(img, (x, y), 5, (75, 0, 130), cv2.FILLED)
+        cv2.circle(img, (x, y), 15, (75, 0, 130), 2)
+
+
+        # Show angles between lines
+        i = cv2.putText(
+            img,
+            f'{x} / {y}',
+            (x - 50, y + 50),
+            cv2.FONT_HERSHEY_PLAIN,
+            2,
+            (0, 0, 255),
+            2,
+        )
+    return (x,y), i

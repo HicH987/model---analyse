@@ -13,6 +13,24 @@ LABELS = [
     "russian twist",
     "squat",
 ]
+LABELS_2 = [
+    "arm-raise",
+    "basic-curl",
+    "bench press",
+    "biceps curl",
+    "bicyclecrunch",
+    "birddog",
+    "deadlift",
+    "fly",
+    "leg-raise",
+    "pullup",
+    "plank",
+    "overhead-press",
+    "pushup",
+    "russian twist",
+    "squat",
+    "superman",
+]
 
 
 # used landmarks

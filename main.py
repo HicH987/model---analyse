@@ -1,5 +1,7 @@
 import os
 from helpers.utils import (
+    get_coordinates,
+    get_dist,
     pose_detection, 
     get_2d_landmarks,
     make_prediction,
@@ -12,9 +14,11 @@ from helpers.analyse import analyse
 from helpers.global_vars import LABELS
 from helpers.DeepFitClassifier import DeepFitClassifier
 
+
 import cv2
 import mediapipe as mp
 from collections import deque
+from glob import glob
 
 # --- GLOBAL VAR --------
 mp_pose = mp.solutions.pose
@@ -54,6 +58,7 @@ def main():
     ) as POSE:
         while cap.isOpened():
             ret, img = cap.read()
+            
             frame = cv2.resize(img,(640, 480), interpolation=cv2.INTER_AREA)
             frame, results = pose_detection(frame, pose_model=POSE)
             landmark_list = get_2d_landmarks(frame, results)
@@ -61,6 +66,17 @@ def main():
                 predicted_label, prediction_proba = make_prediction(
                     CLF, landmark_list, frame_queue, threshold 
                 )
+                """
+                (x1,y1),img  = get_coordinates(img, landmark_list, 15)
+                (x2,y2),img  = get_coordinates(img, landmark_list, 16)
+                if abs(y1-y2) <= 10:
+                    predicted_label = "biceps curl bar"
+                rWist_lWist_dist, im = get_dist(img, landmark_list, 15, 16)
+                if not (rWist_lWist_dist <=0.05 and rWist_lWist_dist >= 0.01) and predicted_label == "squat":
+                    predicted_label = "biceps curl bar"
+                
+                """
+                    
                 if prediction_proba <= 0.0 :
                     if len(hist_perd) > 0:
                         predicted_label = hist_perd[-1]
@@ -88,6 +104,7 @@ def main():
         cap.release()
         video_writer.release()
         cv2.destroyAllWindows()
+        
 
 
 if __name__ == "__main__":
